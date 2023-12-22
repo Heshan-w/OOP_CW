@@ -4,11 +4,11 @@ import java.util.Scanner;
 
 public class WestminsterShoppingManager implements ShoppingManager {
     // declaring a list of "Product" type objects to store products entered by the manager
-    private final List<Product> availableProducts;
+    private final List<Product> storeInventory;
 
     // constructor for the "WestminsterShoppingManager" class
     public WestminsterShoppingManager() {
-        this.availableProducts = new ArrayList<>();
+        this.storeInventory = new ArrayList<>();
     }
 
     // method to display the manager console menu(options available to the manager)
@@ -43,7 +43,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         } while (!choice.equals("6"));
     }
 
-    // method to add a product to the "availableProducts" list
+    // method to add a product to the "storeInventory" list
     @Override
     public void addProduct() {
         Scanner scanner = new Scanner(System.in);
@@ -106,8 +106,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
         // creating an "Electronics" object with the gathered details
         Product product = new Electronics(productID, productName, itemsInStock, price, brand, warrantyPeriod);
-        // adding the created "Electronics" object to the "availableProducts" list
-        availableProducts.add(product);
+        // adding the created "Electronics" object to the "storeInventory" list
+        storeInventory.add(product);
     }
 
     // method to add a new clothing product
@@ -131,11 +131,11 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
         // creating a "Clothing" object with the gathered details
         Product product = new Clothing(productID, productName, itemsInStock, price, size, colour);
-        // adding the created "Clothing" object to the "availableProducts" list
-        availableProducts.add(product);
+        // adding the created "Clothing" object to the "storeInventory" list
+        storeInventory.add(product);
     }
 
-    // method to remove a product from the "availableProducts" list
+    // method to remove a product from the "storeInventory" list
     @Override
     public void removeProduct() {
         Scanner scanner = new Scanner(System.in);
@@ -145,12 +145,12 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
         // using a flag variable to indicate whether the product has been found or not
         boolean itemFound = false;
-        // using an enhanced for loop to iterate through the "availableProducts" list avoiding the use of an index
-        for (Product product : availableProducts) {
+        // using an enhanced for loop to iterate through the "storeInventory" list avoiding the use of an index
+        for (Product product : storeInventory) {
             // checking if the product ID of the current product matches the entered product ID
             if (product.getProductID().equals(productID)) {
-                // removing that product from the "availableProducts" list
-                availableProducts.remove(product);
+                // removing that product from the "storeInventory" list
+                storeInventory.remove(product);
                 System.out.println("Product removed successfully" + ", removed product ID : " + productID);
                 // setting the "itemFound" variable to true to indicate that the product has been found
                 itemFound = true;
@@ -163,15 +163,15 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
     }
 
-    // method to print the details of products in the "availableProducts" list sorted by product ID alphabetically
+    // method to print the details of products in the "storeInventory" list sorted by product ID alphabetically
     @Override
     public void printProductList() {
         System.out.println("\n***Product List***");
-        if (availableProducts.isEmpty()) {
+        if (storeInventory.isEmpty()) {
             System.out.println("No products available");
             return;
         }
-        for (Product product : availableProducts) {
+        for (Product product : storeInventory) {
             if (product instanceof Electronics) {
                 System.out.println("\nElectronic\n" + "Product ID: " + product.getProductID()
                         + "\nProduct Name: " + product.getProductName() + "\nItems in stock: "
@@ -190,15 +190,19 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
     }
 
-    // method to save the products in the "availableProducts" list to a file
+    // method to save the products in the "storeInventory" list to a file
     @Override
     public void saveToFile() {
 
     }
 
-    // method to load products from a file to the "availableProducts" list
+    // method to load products from a file to the "storeInventory" list
     @Override
     public void loadFromFile() {
 
+    }
+
+    public List<Product> getStoreInventory() {
+        return storeInventory;
     }
 }
