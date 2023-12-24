@@ -1,4 +1,6 @@
-public class Clothing extends  Product{
+import java.io.Serializable;
+
+public class Clothing extends  Product implements Serializable {
     // declaring "Clothing" class specific instance variables
     private String size;
     private String colour;

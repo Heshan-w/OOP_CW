@@ -1,6 +1,9 @@
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.*;
 
 public class WestminsterShoppingManager implements ShoppingManager {
     // declaring a list of "Product" type objects to store products entered by the manager
@@ -13,6 +16,12 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
     // method to display the manager console menu(options available to the manager)
     public void displayManagerConsole() {
+        // calling the "loadFromFile" method to load products from a file to the "storeInventory" list
+        // Check if the file "products.dat" exists before loading from it
+        if (Files.exists(Paths.get("products.dat"))) {
+            // calling the "loadFromFile" method to load products from a file to the "storeInventory" list
+            loadFromFile();
+        }
         // creating a scanner object to read user input
         Scanner scanner = new Scanner(System.in);
         String choice;
@@ -193,13 +202,26 @@ public class WestminsterShoppingManager implements ShoppingManager {
     // method to save the products in the "storeInventory" list to a file
     @Override
     public void saveToFile() {
-
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("products.dat"))){
+            objectOutputStream.writeObject(storeInventory);
+            System.out.println("Products saved successfully");
+        } catch (IOException e){
+            System.out.println("Error occurred while saving products");
+            e.printStackTrace();
+        }
     }
 
     // method to load products from a file to the "storeInventory" list
     @Override
     public void loadFromFile() {
-
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("products.dat"))){
+            storeInventory.clear();
+            storeInventory.addAll((List<Product>) objectInputStream.readObject());
+            System.out.println("Products loaded successfully");
+        } catch (IOException | ClassNotFoundException e){
+            System.out.println("Error occurred while loading products");
+            e.printStackTrace();
+        }
     }
 
     public List<Product> getStoreInventory() {

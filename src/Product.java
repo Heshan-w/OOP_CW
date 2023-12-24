@@ -1,4 +1,6 @@
-public abstract class Product {
+import java.io.Serializable;
+
+public abstract class Product implements Serializable {
     // declaring the common instance variables for subclasses to inherit and use
     private String productID;
     private String productName;
