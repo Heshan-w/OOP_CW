@@ -72,15 +72,12 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 case "1" -> {
                     // calling the "addElectronicProduct" method to add a new electronic product
                     addElectronicProduct();
-                    // displaying a message to indicate that the product has been added successfully
-                    System.out.println("Electronic product added successfully");
                     // terminating the looping
                     return;
                 }
                 case "2" -> {
                     // calling the "addClothingProduct" method to add a new clothing product
                     addClothingProduct();
-                    System.out.println("Clothing product added successfully");
                     return;
                 }
                 case "3" -> {
@@ -100,6 +97,15 @@ public class WestminsterShoppingManager implements ShoppingManager {
         // prompting for and gathering the electronic product details from the user
         System.out.print("\nEnter the product ID: ");
         String productID = scanner.next();
+        // checking if the product ID already exists in the "storeInventory" list
+        // using a lambda expression to check if the product ID of the current product matches the entered product ID
+        // if the product ID already exists, the "anyMatch()" method will return true and execute the if block
+        if (storeInventory.stream().anyMatch(product -> product.getProductID().equals(productID))) {
+            // displaying a message to indicate that the product ID already exists
+            System.out.println("Product ID already exists");
+            // terminating the method
+            return;
+        }
         scanner.nextLine();
         System.out.print("Enter the product name: ");
         String productName = scanner.nextLine();
@@ -117,6 +123,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Product product = new Electronics(productID, productName, itemsInStock, price, brand, warrantyPeriod);
         // adding the created "Electronics" object to the "storeInventory" list
         storeInventory.add(product);
+        // displaying a message to indicate that the product has been added successfully
+        System.out.println("Electronic product added successfully");
     }
 
     // method to add a new clothing product
@@ -126,6 +134,13 @@ public class WestminsterShoppingManager implements ShoppingManager {
         // prompting for and gathering the clothing product details from the user
         System.out.print("\nEnter the product ID: ");
         String productID = scanner.next();
+        // checking if the product ID already exists in the "storeInventory" list
+        if (storeInventory.stream().anyMatch(product -> product.getProductID().equals(productID))) {
+            // displaying a message to indicate that the product ID already exists
+            System.out.println("Product ID already exists");
+            // terminating the method
+            return;
+        }
         scanner.nextLine();
         System.out.print("Enter the product name: ");
         String productName = scanner.nextLine();
@@ -142,6 +157,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Product product = new Clothing(productID, productName, itemsInStock, price, size, colour);
         // adding the created "Clothing" object to the "storeInventory" list
         storeInventory.add(product);
+        System.out.println("Clothing product added successfully");
     }
 
     // method to remove a product from the "storeInventory" list
@@ -202,9 +218,12 @@ public class WestminsterShoppingManager implements ShoppingManager {
     // method to save the products in the "storeInventory" list to a file
     @Override
     public void saveToFile() {
+        // try-with-resources is used to automatically close the streams
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("products.dat"))){
+            // using writeObject() to write the "storeInventory" list to the file
             objectOutputStream.writeObject(storeInventory);
             System.out.println("Products saved successfully");
+        // catching the exceptions thrown by the "FileOutputStream" and "ObjectOutputStream" constructors
         } catch (IOException e){
             System.out.println("Error occurred while saving products");
             e.printStackTrace();
@@ -215,7 +234,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
     @Override
     public void loadFromFile() {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("products.dat"))){
+            // using clear() to clear the "storeInventory" list before loading products from the file
             storeInventory.clear();
+            // using addAll() to add all the products in the file to the "storeInventory" list
+            // (List<Product>) is used to cast the object returned by readObject() to a "List<Product>" type object
             storeInventory.addAll((List<Product>) objectInputStream.readObject());
             System.out.println("Products loaded successfully");
         } catch (IOException | ClassNotFoundException e){
@@ -224,6 +246,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
     }
 
+    // getter for the "storeInventory" list
     public List<Product> getStoreInventory() {
         return storeInventory;
     }
