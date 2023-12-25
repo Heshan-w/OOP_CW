@@ -1,6 +1,7 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.io.*;
@@ -196,6 +197,11 @@ public class WestminsterShoppingManager implements ShoppingManager {
             System.out.println("No products available");
             return;
         }
+        // Sorting the storeInventory based on ProductID using Comparator
+        // using the "Comparator.comparing()" method to compare the product IDs of the products in the "storeInventory" list
+        // using the "sort()" method to sort the "storeInventory" list based on the product IDs
+        storeInventory.sort(Comparator.comparing(Product::getProductID));
+
         for (Product product : storeInventory) {
             if (product instanceof Electronics) {
                 System.out.println("\nElectronic\n" + "Product ID: " + product.getProductID()
