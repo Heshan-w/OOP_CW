@@ -9,6 +9,8 @@ import java.io.*;
 public class WestminsterShoppingManager implements ShoppingManager {
     // declaring a list of "Product" type objects to store products entered by the manager
     private final List<Product> storeInventory;
+    // constant variable that stores the maximum number of products that can be in stock
+    private final int maxStock = 50;
 
     // constructor for the "WestminsterShoppingManager" class
     public WestminsterShoppingManager() {
@@ -56,6 +58,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
     // method to add a product to the "storeInventory" list
     @Override
     public void addProduct() {
+        if (storeInventory.size() == maxStock) {
+            System.out.println("Maximum stock reached");
+            return;
+        }
         Scanner scanner = new Scanner(System.in);
         String choice;
 
@@ -110,7 +116,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
         scanner.nextLine();
         System.out.print("Enter the product name: ");
         String productName = scanner.nextLine();
-        System.out.print("Enter updated stock value for " + productName + ": ");
+        System.out.print("Enter updated stock value for " + productName
+                + "\n(Current stock for " + productName + " = " + getItemStock(productName) + "): ");
         int itemsInStock = scanner.nextInt();
         System.out.print("Enter the price of the product: ");
         double price = scanner.nextDouble();
@@ -145,7 +152,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
         scanner.nextLine();
         System.out.print("Enter the product name: ");
         String productName = scanner.nextLine();
-        System.out.print("Enter updated stock value for " + productName + ": ");
+        System.out.print("Enter updated stock value for " + productName
+                + "\n(Current stock for " + productName + " = " + getItemStock(productName) + "): ");
         int itemsInStock = scanner.nextInt();
         System.out.print("Enter the price of the product: ");
         double price = scanner.nextDouble();
@@ -171,13 +179,19 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
         // using a flag variable to indicate whether the product has been found or not
         boolean itemFound = false;
+        String productType;
         // using an enhanced for loop to iterate through the "storeInventory" list avoiding the use of an index
         for (Product product : storeInventory) {
             // checking if the product ID of the current product matches the entered product ID
             if (product.getProductID().equals(productID)) {
                 // removing that product from the "storeInventory" list
+                if (product instanceof Clothing) {
+                    productType = "Clothing";
+                } else {
+                    productType = "Electronic";
+                }
                 storeInventory.remove(product);
-                System.out.println("Product removed successfully" + ", removed product ID : " + productID);
+                System.out.println(productType + "Product removed successfully" + ", removed product ID : " + productID);
                 // setting the "itemFound" variable to true to indicate that the product has been found
                 itemFound = true;
                 break;
@@ -255,5 +269,15 @@ public class WestminsterShoppingManager implements ShoppingManager {
     // getter for the "storeInventory" list
     public List<Product> getStoreInventory() {
         return storeInventory;
+    }
+
+    public int getItemStock(String productName) {
+        int stock = 0;
+        for (Product product : storeInventory) {
+            if (product.getProductName().equals(productName)) {
+                stock ++;
+            }
+        }
+        return stock;
     }
 }
