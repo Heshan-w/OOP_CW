@@ -1,9 +1,6 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 public class WestminsterShoppingManager implements ShoppingManager {
@@ -99,11 +96,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
     // method to add a new electronic product
     private void addElectronicProduct() {
-        Scanner scanner = new Scanner(System.in);
-
         // prompting for and gathering the electronic product details from the user
-        System.out.print("\nEnter the product ID (Format: EL_XXXX): ");
-        String productID = scanner.next();
+        String productID = promptProductID(1);
         // checking if the product ID already exists in the "storeInventory" list
         // using a lambda expression to check if the product ID of the current product matches the entered product ID
         // if the product ID already exists, the "anyMatch()" method will return true and execute the if block
@@ -113,19 +107,18 @@ public class WestminsterShoppingManager implements ShoppingManager {
             // terminating the method
             return;
         }
-        scanner.nextLine();
         System.out.print("Enter the product name: ");
-        String productName = scanner.nextLine();
-        System.out.print("Enter number of available items for " + productName
-                        + " (product ID = " + productID +") : ");
-        int itemsInStock = scanner.nextInt();
+        String productName = promptProductName();
+        System.out.print("Enter number of available items for "
+                + "'" + productName + "'"
+                + " (product ID = " + productID +") : ");
+        int itemsInStock = promptItemsInStock();
         System.out.print("Enter the price of the product: ");
-        double price = scanner.nextDouble();
+        double price = promptPrice();
         System.out.print("Enter the brand of the product: ");
-        scanner.nextLine();
-        String brand = scanner.nextLine();
-        System.out.print("Enter the warranty period of the product: ");
-        int warrantyPeriod = scanner.nextInt();
+        String brand = promptBrandName();
+        System.out.print("Enter the warranty period of the product (number of weeks): ");
+        int warrantyPeriod = promptWarrantyPeriod();
 
         // creating an "Electronics" object with the gathered details
         Product product = new Electronics(productID, productName, itemsInStock, price, brand, warrantyPeriod);
@@ -137,11 +130,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
     // method to add a new clothing product
     private void addClothingProduct() {
-        Scanner scanner = new Scanner(System.in);
-
         // prompting for and gathering the clothing product details from the user
-        System.out.print("\nEnter the product ID (Format: CL_XXXX): ");
-        String productID = scanner.next();
+        String productID = promptProductID(2);
         // checking if the product ID already exists in the "storeInventory" list
         if (storeInventory.stream().anyMatch(product -> product.getProductID().equals(productID))) {
             // displaying a message to indicate that the product ID already exists
@@ -149,18 +139,18 @@ public class WestminsterShoppingManager implements ShoppingManager {
             // terminating the method
             return;
         }
-        scanner.nextLine();
         System.out.print("Enter the product name: ");
-        String productName = scanner.nextLine();
-        System.out.print("Enter number of available items for " + productName
-                        + " (product ID = " + productID +") : ");
-        int itemsInStock = scanner.nextInt();
+        String productName = promptProductName();
+        System.out.print("Enter number of available items for "
+                + "'" + productName + "'"
+                + " (product ID = " + productID +") : ");
+        int itemsInStock = promptItemsInStock();
         System.out.print("Enter the price of the product: ");
-        double price = scanner.nextDouble();
-        System.out.print("Enter the size of the product: ");
-        String size = scanner.next();
+        double price = promptPrice();
+        System.out.print("Enter the size of the product (XS, S, M, L, XL, XXL): ");
+        String size = promptSize();
         System.out.print("Enter the colour of the product: ");
-        String colour = scanner.next();
+        String colour = promptColour();
 
         // creating a "Clothing" object with the gathered details
         Product product = new Clothing(productID, productName, itemsInStock, price, size, colour);
@@ -271,13 +261,145 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return storeInventory;
     }
 
-    public int getItemStock(String productName) {
-        int stock = 0;
-        for (Product product : storeInventory) {
-            if (product.getProductName().equals(productName)) {
-                stock ++;
+//    public int getItemStock(String productName) {
+//        int stock = 0;
+//        for (Product product : storeInventory) {
+//            if (product.getProductName().equals(productName)) {
+//                stock ++;
+//            }
+//        }
+//        return stock;
+//    }
+
+
+    public String promptProductID(int type) {
+        System.out.println();
+        Scanner scanner = new Scanner(System.in);
+        String productID;
+
+        String formatMessage = (type == 1) ? "EL_XXXX" : "CL_XXXX";
+        String regex = (type == 1) ? "EL_[0-9]{4}" : "CL_[0-9]{4}";
+
+        while (true) {
+            System.out.print("Enter product ID (Format: " + formatMessage + "): ");
+            productID = scanner.nextLine().trim();
+
+            if (productID.matches(regex)) {
+                break;
+            }
+
+            System.out.print("Invalid product ID. Please enter a valid product ID: ");
+        }
+
+        return productID;
+    }
+
+    public String promptProductName() {
+        String productName;
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            productName = scanner.nextLine().trim();
+            if (productName.length() > 0) {
+                break;
+            }
+            System.out.print("Product-name field cannot be empty. Please enter a valid product name : ");
+        }
+        return productName;
+    }
+
+    public int promptItemsInStock() {
+        int itemsInStock;
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                itemsInStock = scanner.nextInt();
+                if (itemsInStock > 0) {
+                    break;
+                }
+                System.out.print("Items in stock cannot be 0 or less. Please enter a valid value : ");
+            } catch (Exception e) {
+                System.out.print("Invalid items in stock value. Please enter a valid value : ");
+                scanner.next();
             }
         }
-        return stock;
+        return itemsInStock;
+    }
+
+    public double promptPrice() {
+        double price;
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                price = scanner.nextDouble();
+                if (price > 0) {
+                    break;
+                }
+                System.out.print("Price cannot be £0 or less. Please enter a valid price : ");
+            } catch (Exception e) {
+                System.out.print("Invalid price. Please enter a valid price : ");
+                scanner.next();
+            }
+        }
+        return price;
+    }
+
+    public String promptBrandName() {
+        String brandName;
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            brandName = scanner.nextLine().trim();
+            if (brandName.length() > 0) {
+                break;
+            }
+            System.out.print("Brand-name field cannot be empty. Please enter a valid brand name : ");
+        }
+        return brandName;
+    }
+
+    public int promptWarrantyPeriod() {
+        int warrantyPeriod;
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                warrantyPeriod = scanner.nextInt();
+                if (warrantyPeriod > 0) {
+                    break;
+                }
+                System.out.print("Warranty period has to be 1 week or greater. Please enter a valid warranty period : ");
+            } catch (Exception e) {
+                System.out.print("Invalid warranty period. Please enter a valid warranty period : ");
+                scanner.next();
+            }
+        }
+        return warrantyPeriod;
+    }
+
+    public String promptSize() {
+        List<String> sizes = new ArrayList<>(Arrays.asList("XS", "S", "M", "L", "XL", "XXL"));
+        Scanner scanner = new Scanner(System.in);
+        String size;
+        while (true) {
+            size = scanner.nextLine().trim().toUpperCase();
+            if (sizes.contains(size)) {
+                break;
+            }
+            System.out.print("Invalid size. Please enter a valid size (XS, S, M, L, XL, XXL) : ");
+        }
+        return size;
+    }
+
+    public String promptColour() {
+        Scanner scanner = new Scanner(System.in);
+        String colour;
+        while (true) {
+            colour = scanner.nextLine().trim();
+            if (colour.length() > 0) {
+                if (colour.matches("[a-zA-Z]+")) {
+                break;
+                }
+            }
+            System.out.print("Please enter a valid colour : ");
+        }
+        return colour;
     }
 }
