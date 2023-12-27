@@ -102,7 +102,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Scanner scanner = new Scanner(System.in);
 
         // prompting for and gathering the electronic product details from the user
-        System.out.print("\nEnter the product ID: ");
+        System.out.print("\nEnter the product ID (Format: EL_XXXX): ");
         String productID = scanner.next();
         // checking if the product ID already exists in the "storeInventory" list
         // using a lambda expression to check if the product ID of the current product matches the entered product ID
@@ -116,8 +116,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
         scanner.nextLine();
         System.out.print("Enter the product name: ");
         String productName = scanner.nextLine();
-        System.out.print("Enter updated stock value for " + productName
-                + "\n(Current stock for " + productName + " = " + getItemStock(productName) + "): ");
+        System.out.print("Enter number of available items for " + productName
+                        + " (product ID = " + productID +") : ");
         int itemsInStock = scanner.nextInt();
         System.out.print("Enter the price of the product: ");
         double price = scanner.nextDouble();
@@ -140,7 +140,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Scanner scanner = new Scanner(System.in);
 
         // prompting for and gathering the clothing product details from the user
-        System.out.print("\nEnter the product ID: ");
+        System.out.print("\nEnter the product ID (Format: CL_XXXX): ");
         String productID = scanner.next();
         // checking if the product ID already exists in the "storeInventory" list
         if (storeInventory.stream().anyMatch(product -> product.getProductID().equals(productID))) {
@@ -152,8 +152,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
         scanner.nextLine();
         System.out.print("Enter the product name: ");
         String productName = scanner.nextLine();
-        System.out.print("Enter updated stock value for " + productName
-                + "\n(Current stock for " + productName + " = " + getItemStock(productName) + "): ");
+        System.out.print("Enter number of available items for " + productName
+                        + " (product ID = " + productID +") : ");
         int itemsInStock = scanner.nextInt();
         System.out.print("Enter the price of the product: ");
         double price = scanner.nextDouble();
