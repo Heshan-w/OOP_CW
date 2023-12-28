@@ -10,10 +10,11 @@ public class Main {
 
         do {
             System.out.print("""
-                \nTo access the customer console, please enter 1.
-                To access the manager console, please enter 2.
-                To exit the application, please enter 3.
-                Enter your choice (1, 2 or 3):\s""");
+                    \n***Main menu***
+                    To access the customer console, please enter 1.
+                    To access the manager console, please enter 2.
+                    To exit the application, please enter 3.
+                    Enter your choice (1, 2 or 3):\s""");
             choice = scanner.next();
 
             switch (choice) {
@@ -21,16 +22,15 @@ public class Main {
                     System.out.println("You have selected the customer console.");
                     System.out.println("Please enter your username and password to login.");
                     System.out.print("Username: ");
-                    String username = scanner.next();
+                    String username = promptUsername();
                     System.out.print("Password: ");
                     String password = scanner.next();
                     User customer = new User(username, password);
 
                     WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
-                    westminsterShoppingManager.addProduct();
-                    westminsterShoppingManager.addProduct();
                     List<Product> availableProducts = westminsterShoppingManager.getStoreInventory();
 
+                    // Launch the customer GUI (test call which displays all inventory items)
                     launchCustomerGUI(customer, availableProducts);
                 }
                 case "2" -> {
@@ -52,5 +52,24 @@ public class Main {
             CustomerGUI customerGUI = new CustomerGUI(customer, availableProducts);
             customerGUI.setVisible(true);
         });
+    }
+
+
+    public static String promptUsername() {
+        Scanner scanner = new Scanner(System.in);
+        String username;
+        // using a while loop to prompt and gather the colour until a valid colour is entered
+        while (true) {
+            username = scanner.nextLine().trim();
+            // using the isEmpty() method to check if the entered colour is empty
+            if (!username.isEmpty()) {
+                // using the "matches()" method to check if the entered colour is a string
+                if (username.matches("[a-zA-Z]+")) {
+                    break;
+                }
+            }
+            System.out.print("Please enter a valid colour : ");
+        }
+        return username;
     }
 }

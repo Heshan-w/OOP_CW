@@ -6,22 +6,20 @@ import java.io.*;
 public class WestminsterShoppingManager implements ShoppingManager {
     // declaring a list of "Product" type objects to store products entered by the manager
     private final List<Product> storeInventory;
-    // constant variable that stores the maximum number of products that can be in stock
-    private final int maxStock = 50;
 
     // constructor for the "WestminsterShoppingManager" class
     public WestminsterShoppingManager() {
         this.storeInventory = new ArrayList<>();
-    }
-
-    // method to display the manager console menu(options available to the manager)
-    public void displayManagerConsole() {
         // calling the "loadFromFile" method to load products from a file to the "storeInventory" list
         // Check if the file "products.dat" exists before loading from it
         if (Files.exists(Paths.get("products.dat"))) {
             // calling the "loadFromFile" method to load products from a file to the "storeInventory" list
             loadFromFile();
         }
+    }
+
+    // method to display the manager console menu(options available to the manager)
+    public void displayManagerConsole() {
         // creating a scanner object to read user input
         Scanner scanner = new Scanner(System.in);
         String choice;
@@ -30,13 +28,13 @@ public class WestminsterShoppingManager implements ShoppingManager {
         do {
             System.out.println("\n***Manager options***");
             System.out.println("Enter 1 to add a new product");
-            System.out.println("Enter 2 to Remove a product");
-            System.out.println("Enter 3 to Print the list of products");
-            System.out.println("Enter 4 to Save products to a file");
-            System.out.println("Enter 5 to Load products from a file");
-            System.out.println("Enter 6 to Exit menu");
+            System.out.println("Enter 2 to remove a product");
+            System.out.println("Enter 3 to print the list of products");
+            System.out.println("Enter 4 to save products to a file");
+            System.out.println("Enter 5 to load products from a file");
+            System.out.println("Enter 6 to exit Manager console menu");
             System.out.print("Enter your choice (1-6): ");
-            choice = scanner.next();
+            choice = scanner.next().trim();
 
             // switch statement to execute the appropriate method based on the user input
             System.out.println("You have selected option " + choice);
@@ -46,7 +44,34 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 case "3" -> printProductList();
                 case "4" -> saveToFile();
                 case "5" -> loadFromFile();
-                case "6" -> System.out.println("Exiting the manager menu....");
+                case "6" -> {
+                    while (true) {
+                        // string to store the user input for saving the changes made to the inventory
+                        String saveOption;
+                        // displays the save options until the user enters a valid one
+                        System.out.print("""
+                            \nYou have selected to exit the manager menu.
+                            Enter 1 TO SAVE any changes made to the inventory
+                            Enter 2 to exit console menu WITHOUT SAVING any changes made to the inventory
+                            Enter your choice (1 or 2):\s""");
+                        saveOption = scanner.next().trim();
+                        // if-else statement to execute the method based on user input
+                        if (saveOption.equals("1")) {
+                            // calling the "saveToFile" method to save the changes made to the inventory
+                            saveToFile();
+                            System.out.println("Exiting the manager menu....");
+                            // terminating the looping
+                            break;
+                        } else if (saveOption.equals("2")) {
+                            System.out.println("\nChanges made to the inventory not saved");
+                            System.out.println("Exiting the manager menu....");
+                            break;
+                        // if the user enters an invalid option, the loop continues
+                        } else {
+                            System.out.println("Invalid choice.");
+                        }
+                    }
+                }
                 default -> System.out.println("Invalid choice. Please enter a valid option (1-6).");
             }
         } while (!choice.equals("6"));
@@ -55,6 +80,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
     // method to add a product to the "storeInventory" list
     @Override
     public void addProduct() {
+        // constant variable that stores the maximum number of products that can be in stock
+        int maxStock = 50;
         if (storeInventory.size() == maxStock) {
             System.out.println("Maximum stock reached");
             return;
@@ -174,14 +201,11 @@ public class WestminsterShoppingManager implements ShoppingManager {
         for (Product product : storeInventory) {
             // checking if the product ID of the current product matches the entered product ID
             if (product.getProductID().equals(productID)) {
+                // using a ternary operator to determine the type of the product
+                productType = (product instanceof Electronics) ? "Electronic" : "Clothing";
                 // removing that product from the "storeInventory" list
-                if (product instanceof Clothing) {
-                    productType = "Clothing";
-                } else {
-                    productType = "Electronic";
-                }
                 storeInventory.remove(product);
-                System.out.println(productType + "Product removed successfully" + ", removed product ID : " + productID);
+                System.out.println(productType + " Product removed successfully" + ", removed product ID : " + productID);
                 // setting the "itemFound" variable to true to indicate that the product has been found
                 itemFound = true;
                 break;
@@ -232,10 +256,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("products.dat"))){
             // using writeObject() to write the "storeInventory" list to the file
             objectOutputStream.writeObject(storeInventory);
-            System.out.println("Products saved successfully");
+            System.out.println("\nProducts saved successfully");
         // catching the exceptions thrown by the "FileOutputStream" and "ObjectOutputStream" constructors
         } catch (IOException e){
-            System.out.println("Error occurred while saving products");
+            System.out.println("\nError occurred while saving products");
             e.printStackTrace();
         }
     }
@@ -249,9 +273,9 @@ public class WestminsterShoppingManager implements ShoppingManager {
             // using addAll() to add all the products in the file to the "storeInventory" list
             // (List<Product>) is used to cast the object returned by readObject() to a "List<Product>" type object
             storeInventory.addAll((List<Product>) objectInputStream.readObject());
-            System.out.println("Products loaded successfully");
+            System.out.println("\nProducts loaded successfully");
         } catch (IOException | ClassNotFoundException e){
-            System.out.println("Error occurred while loading products");
+            System.out.println("\nError occurred while loading products");
             e.printStackTrace();
         }
     }
@@ -277,20 +301,24 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Scanner scanner = new Scanner(System.in);
         String productID;
 
+        // using a ternary operator to determine the format of the product ID based on the type of the product
         String formatMessage = (type == 1) ? "EL_XXXX" : "CL_XXXX";
+        // using a ternary operator to determine the regex of the product ID based on the type of the product
         String regex = (type == 1) ? "EL_[0-9]{4}" : "CL_[0-9]{4}";
 
+        // using a while loop to prompt and gather the product ID until a valid product ID is entered
         while (true) {
             System.out.print("Enter product ID (Format: " + formatMessage + "): ");
             productID = scanner.nextLine().trim();
-
+            // using the "matches()" method to check if the entered product ID matches the regex
+            // if product ID matches the regex, while loop is terminated and product ID is returned
             if (productID.matches(regex)) {
                 break;
             }
-
+            // displaying a message to indicate that the entered product ID is invalid
             System.out.print("Invalid product ID. Please enter a valid product ID: ");
         }
-
+        // returning the product ID
         return productID;
     }
 
@@ -299,7 +327,9 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             productName = scanner.nextLine().trim();
-            if (productName.length() > 0) {
+            // using the isEmpty() method to check if the entered product name is empty
+            // if not empty, loop is terminated and product name is returned
+            if (!productName.isEmpty()) {
                 break;
             }
             System.out.print("Product-name field cannot be empty. Please enter a valid product name : ");
@@ -311,14 +341,18 @@ public class WestminsterShoppingManager implements ShoppingManager {
         int itemsInStock;
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            // using a try-catch block to catch any exception thrown by the "nextInt()" method
             try {
+                // using the "nextInt()" method to check if the entered items in stock is an integer
                 itemsInStock = scanner.nextInt();
+                // checking if the stock for the entered item is greater than 0
                 if (itemsInStock > 0) {
                     break;
                 }
                 System.out.print("Items in stock cannot be 0 or less. Please enter a valid value : ");
             } catch (Exception e) {
                 System.out.print("Invalid items in stock value. Please enter a valid value : ");
+                // using the "next()" method to clear the scanner buffer
                 scanner.next();
             }
         }
@@ -329,8 +363,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
         double price;
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            // using a try-catch block to catch any exception thrown by the "nextDouble()" method
             try {
                 price = scanner.nextDouble();
+                // checking if the price for the entered item is greater than 0
                 if (price > 0) {
                     break;
                 }
@@ -348,7 +384,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             brandName = scanner.nextLine().trim();
-            if (brandName.length() > 0) {
+            // using the isEmpty() method to check if the entered brand name is empty
+            if (!brandName.isEmpty()) {
                 break;
             }
             System.out.print("Brand-name field cannot be empty. Please enter a valid brand name : ");
@@ -363,6 +400,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
             try {
                 warrantyPeriod = scanner.nextInt();
                 if (warrantyPeriod > 0) {
+                    // if warranty period is greater than 0, loop is terminated and the warranty period is returned
                     break;
                 }
                 System.out.print("Warranty period has to be 1 week or greater. Please enter a valid warranty period : ");
@@ -375,11 +413,15 @@ public class WestminsterShoppingManager implements ShoppingManager {
     }
 
     public String promptSize() {
+        // Declaring an arraylist of acceptable size options
         List<String> sizes = new ArrayList<>(Arrays.asList("XS", "S", "M", "L", "XL", "XXL"));
         Scanner scanner = new Scanner(System.in);
         String size;
         while (true) {
+            // using trim() to remove any leading or trailing spaces
+            // using toUpperCase() to convert the entered size to uppercase
             size = scanner.nextLine().trim().toUpperCase();
+            // using contains() to check if the entered size is in the "sizes" arraylist
             if (sizes.contains(size)) {
                 break;
             }
@@ -391,9 +433,12 @@ public class WestminsterShoppingManager implements ShoppingManager {
     public String promptColour() {
         Scanner scanner = new Scanner(System.in);
         String colour;
+        // using a while loop to prompt and gather the colour until a valid colour is entered
         while (true) {
             colour = scanner.nextLine().trim();
-            if (colour.length() > 0) {
+            // using the isEmpty() method to check if the entered colour is empty
+            if (!colour.isEmpty()) {
+                // using the "matches()" method to check if the entered colour is a string
                 if (colour.matches("[a-zA-Z]+")) {
                 break;
                 }
