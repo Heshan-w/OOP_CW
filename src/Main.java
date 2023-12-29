@@ -68,7 +68,7 @@ public class Main {
                     break;
                 }
             }
-            System.out.print("Please enter a valid colour : ");
+            System.out.print("Please enter a valid username : ");
         }
         return username;
     }
