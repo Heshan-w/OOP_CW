@@ -125,10 +125,11 @@ public class CustomerGUI extends JFrame {
 
             if (product instanceof Clothing) {
                 rowData[2] = "Clothing";
-                rowData[4] = ((Clothing) product).getSize() + ", " + ((Clothing) product).getColour();
+                rowData[4] = "Size: " + ((Clothing) product).getSize() + ", Colour: " + ((Clothing) product).getColour();
             } else if (product instanceof Electronics) {
                 rowData[2] = "Electronics";
-                rowData[4] = ((Electronics) product).getBrand() + ", " + ((Electronics) product).getWarrantyPeriod() + " weeks Warranty";
+                rowData[4] = "Brand: " + ((Electronics) product).getBrand() +
+                        ", Warranty Period: " + ((Electronics) product).getWarrantyPeriod() + " weeks";
             }
 
             tableModel.addRow(rowData);
@@ -145,10 +146,19 @@ public class CustomerGUI extends JFrame {
     private String getProductDetails(int rowIndex) {
         StringBuilder details = new StringBuilder();
         details.append("Product ID: ").append(tableModel.getValueAt(rowIndex, 0)).append("\n");
-        details.append("Name: ").append(tableModel.getValueAt(rowIndex, 1)).append("\n");
         details.append("Category: ").append(tableModel.getValueAt(rowIndex, 2)).append("\n");
-        details.append("Price(£): ").append(tableModel.getValueAt(rowIndex, 3)).append("\n");
-        details.append("Info: ").append(tableModel.getValueAt(rowIndex, 4)).append("\n");
+        details.append("Name: ").append(tableModel.getValueAt(rowIndex, 1)).append("\n");
+
+        if (tableModel.getValueAt(rowIndex, 4) != null) {
+            details.append(tableModel.getValueAt(rowIndex, 4)).append("\n");
+        }
+
+        // Add the number of available items for the selected product
+        Product selectedProduct = availableProducts.get(rowIndex);
+        if (selectedProduct != null) {
+            details.append("Available Items: ").append(selectedProduct.getItemsInStock()).append("\n");
+        }
+
         return details.toString();
     }
 
