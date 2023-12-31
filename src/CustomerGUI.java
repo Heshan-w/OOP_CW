@@ -5,6 +5,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,6 +99,27 @@ public class CustomerGUI extends JFrame {
         controlPanel.add(new JLabel("Filter:"));
         controlPanel.add(filterComboBox);
 
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton addToCartButton = new JButton("Add to Shopping Cart");
+        addToCartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Add your logic here for adding the selected product to the shopping cart
+                int selectedRow = productsTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    Product selectedProduct = availableProducts.get(selectedRow);
+                    if (selectedProduct != null) {
+                        // Add the selected product to the shopping cart
+                        addToShoppingCart(selectedProduct);
+                        JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
+                    }
+                }
+            }
+        });
+        buttonPanel.add(addToCartButton);
+
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+
         add(controlPanel, BorderLayout.NORTH);
         add(topPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -160,6 +183,11 @@ public class CustomerGUI extends JFrame {
         }
 
         return details.toString();
+    }
+
+    private void addToShoppingCart(Product product) {
+        // Implement your logic to add the product to the shopping cart
+        // You can update the shopping cart of the customer or perform any other necessary actions
     }
 
     public static void main(String[] args) {
