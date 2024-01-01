@@ -1,12 +1,9 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +52,7 @@ public class CustomerGUI extends JFrame {
         JTable productsTable = new JTable(tableModel);
 
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -85,13 +83,10 @@ public class CustomerGUI extends JFrame {
         bottomPanel.add(detailsTextArea, BorderLayout.CENTER);
 
         // Add a ListSelectionListener to the table
-        productsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                int selectedRow = productsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    detailsTextArea.setText(getProductDetails(selectedRow));
-                }
+        productsTable.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = productsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                detailsTextArea.setText(getProductDetails(selectedRow));
             }
         });
 
@@ -101,18 +96,15 @@ public class CustomerGUI extends JFrame {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton addToCartButton = new JButton("Add to Shopping Cart");
-        addToCartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Add your logic here for adding the selected product to the shopping cart
-                int selectedRow = productsTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    Product selectedProduct = availableProducts.get(selectedRow);
-                    if (selectedProduct != null) {
-                        // Add the selected product to the shopping cart
-                        addToShoppingCart(selectedProduct);
-                        JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
-                    }
+        addToCartButton.addActionListener(e -> {
+            // Add your logic here for adding the selected product to the shopping cart
+            int selectedRow = productsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                Product selectedProduct = availableProducts.get(selectedRow);
+                if (selectedProduct != null) {
+                    // Add the selected product to the shopping cart
+                    addToShoppingCart(selectedProduct);
+                    JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
                 }
             }
         });
@@ -128,17 +120,13 @@ public class CustomerGUI extends JFrame {
     private void updateTableAndDetails(String filter) {
         tableModel.setRowCount(0);
 
-        List<Product> filteredProducts;
-        switch (filter) {
-            case "Clothing":
-                filteredProducts = availableProducts.stream().filter(product -> product instanceof Clothing).collect(Collectors.toList());
-                break;
-            case "Electronics":
-                filteredProducts = availableProducts.stream().filter(product -> product instanceof Electronics).collect(Collectors.toList());
-                break;
-            default:
-                filteredProducts = availableProducts;
-        }
+        List<Product> filteredProducts = switch (filter) {
+            case "Clothing" ->
+                    availableProducts.stream().filter(product -> product instanceof Clothing).collect(Collectors.toList());
+            case "Electronics" ->
+                    availableProducts.stream().filter(product -> product instanceof Electronics).collect(Collectors.toList());
+            default -> availableProducts;
+        };
 
         for (Product product : filteredProducts) {
             Object[] rowData = new Object[5];
@@ -188,18 +176,5 @@ public class CustomerGUI extends JFrame {
     private void addToShoppingCart(Product product) {
         // Implement your logic to add the product to the shopping cart
         // You can update the shopping cart of the customer or perform any other necessary actions
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User testUser = new User("TestUser", "TestPassword");
-            WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
-            westminsterShoppingManager.addProduct();
-            westminsterShoppingManager.addProduct();
-            List<Product> availableProducts = westminsterShoppingManager.getStoreInventory();
-
-            CustomerGUI customerGUI = new CustomerGUI(testUser, availableProducts);
-            customerGUI.setVisible(true);
-        });
     }
 }
