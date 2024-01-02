@@ -28,4 +28,9 @@ public class ShoppingCart {
         }
         return totalPrice;
     }
+
+    // method to get the list of Product objects in the "selectedProducts" list
+    public List<Product> getSelectedProducts() {
+        return selectedProducts;
+    }
 }

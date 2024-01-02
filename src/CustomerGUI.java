@@ -10,12 +10,15 @@ import java.util.stream.Collectors;
 public class CustomerGUI extends JFrame {
     private User customer;
     private final List<Product> availableProducts;
+
+    private final List<Product> shoppingCartItems;
     private DefaultTableModel tableModel;
     private JTextArea detailsTextArea;
 
-    public CustomerGUI(User customer, List<Product> availableProducts) {
+    public CustomerGUI(User customer, List<Product> availableProducts, List<Product> shoppingCartItems) {
         this.customer = customer;
         this.availableProducts = availableProducts;
+        this.shoppingCartItems = shoppingCartItems;
 
         setTitle("Westminster Shopping Centre");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

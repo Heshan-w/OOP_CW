@@ -30,8 +30,11 @@ public class Main {
                     WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
                     List<Product> availableProducts = westminsterShoppingManager.getStoreInventory();
 
+                    ShoppingCart shoppingCart = new ShoppingCart();
+                    List<Product> shoppingCartItems = shoppingCart.getSelectedProducts();
+
                     // Launch the customer GUI (test call which displays all inventory items)
-                    launchCustomerGUI(customer, availableProducts);
+                    launchCustomerGUI(customer, availableProducts, shoppingCartItems);
                 }
                 case "2" -> {
                     System.out.println("You have selected the manager console.");
@@ -46,14 +49,13 @@ public class Main {
         } while (!choice.equals("3"));
     }
 
-    private static void launchCustomerGUI(User customer, List<Product> availableProducts) {
+    private static void launchCustomerGUI(User customer, List<Product> availableProducts, List<Product> shoppingCartItems) {
         // Create and display the GUI on the event dispatch thread
         SwingUtilities.invokeLater(() -> {
-            CustomerGUI customerGUI = new CustomerGUI(customer, availableProducts);
+            CustomerGUI customerGUI = new CustomerGUI(customer, availableProducts, shoppingCartItems);
             customerGUI.setVisible(true);
         });
     }
-
 
     public static String promptUsername() {
         Scanner scanner = new Scanner(System.in);
