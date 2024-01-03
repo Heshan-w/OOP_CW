@@ -25,6 +25,7 @@ public class Main {
                     String username = promptUsername();
                     System.out.print("Password: ");
                     String password = scanner.next();
+                    
                     User customer = new User(username, password);
 
                     WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
