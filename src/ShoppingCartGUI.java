@@ -4,8 +4,11 @@ import java.awt.*;
 import java.util.List;
 
 public class ShoppingCartGUI extends JFrame {
+    // declaring instance variables
     private User customer;
+    // declaring a list to store the products added to the shopping cart
     private List<Product> shoppingCartItems;
+    // declaring a table model to be used by the JTable
     private DefaultTableModel tableModel;
 
     public ShoppingCartGUI(User customer, List<Product> shoppingCartItems) {
@@ -13,10 +16,14 @@ public class ShoppingCartGUI extends JFrame {
         this.shoppingCartItems = shoppingCartItems;
 
         setTitle("Shopping Cart");
+        // setting the default close operation to "DISPOSE_ON_CLOSE" to close only the current window
+        // and not the entire application
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
 
+        // calling the method to initialize the GUI
         initUI();
+        // centering the GUI on the screen
         setLocationRelativeTo(null);
     }
 
