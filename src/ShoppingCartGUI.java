@@ -38,20 +38,33 @@ public class ShoppingCartGUI extends JFrame {
         };
         tableModel.setColumnIdentifiers(new Object[]{"Product ID", "Name", "Category", "Price(£)", "Info", "Available Items"});
 
+        // creating a JTable with the table model
         JTable shoppingCartTable = new JTable(tableModel);
+        // setting the table to be scrollable
         JScrollPane tableScrollPane = new JScrollPane(shoppingCartTable);
 
+        // adding the products in the shopping cart to the table
         for (Product product : shoppingCartItems) {
+            // declaring an array to store the data of each product
             Object[] rowData = new Object[6];
+            // adding the data of each product to the array
             rowData[0] = product.getProductID();
+            // checking if the product is an instance of the "Clothing" class
             rowData[1] = product.getProductName();
+            // adding the product category to the table
             rowData[3] = product.getPrice();
 
+            // checking if the product is an instance of the "Clothing" class
             if (product instanceof Clothing) {
+                // adding the product category to the table
                 rowData[2] = "Clothing";
+                // adding the product info to the table
                 rowData[4] = "Size: " + ((Clothing) product).getSize() + ", Colour: " + ((Clothing) product).getColour();
+            // checking if the product is an instance of the "Electronics" class
             } else if (product instanceof Electronics) {
+                // adding the product category to the table
                 rowData[2] = "Electronics";
+                // adding the product info to the table
                 rowData[4] = "Brand: " + ((Electronics) product).getBrand() +
                         ", Warranty Period: " + ((Electronics) product).getWarrantyPeriod() + " weeks";
             }
