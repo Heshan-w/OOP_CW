@@ -72,12 +72,16 @@ public class ShoppingCartGUI extends JFrame {
             // Adding the "Available Items" column
             rowData[5] = product.getItemsInStock();
 
+            // adding the product data to the table
             tableModel.addRow(rowData);
         }
 
+        // creating a panel to hold the table
         JPanel tablePanel = new JPanel(new BorderLayout());
+        // adding the table to the panel
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
 
+        // creating a panel to hold the "Checkout" button
         add(tablePanel, BorderLayout.CENTER);
     }
 
