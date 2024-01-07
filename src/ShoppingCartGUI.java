@@ -86,6 +86,7 @@ public class ShoppingCartGUI extends JFrame {
     }
 
     public static void main(String[] args) {
+        // creating a new thread to run the GUI
         SwingUtilities.invokeLater(() -> {
             User testUser = new User("TestUser", "TestPassword");
             WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
