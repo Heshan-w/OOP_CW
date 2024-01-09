@@ -196,10 +196,10 @@ public class CustomerGUI extends JFrame {
             details.append(tableModel.getValueAt(rowIndex, 4)).append("\n");
         }
 
-        Product selectedProduct = availableProducts.get(rowIndex);
-        if (selectedProduct != null) {
-            details.append("Available Items: ").append(selectedProduct.getItemsInStock()).append("\n");
-        }
+        Object selectedProductID = tableModel.getValueAt(rowIndex, 0);
+        availableProducts.stream()
+                .filter(product -> product.getProductID().equals(selectedProductID))
+                .findFirst().ifPresent(selectedProduct -> details.append("Available Items: ").append(selectedProduct.getItemsInStock()).append("\n"));
 
         return details.toString();
     }
