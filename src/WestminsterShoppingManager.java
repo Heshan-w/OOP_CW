@@ -295,7 +295,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
 //        return stock;
 //    }
 
-
     public String promptProductID(int type) {
         System.out.println();
         Scanner scanner = new Scanner(System.in);

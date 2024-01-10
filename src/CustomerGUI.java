@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CustomerGUI extends JFrame {
-    private User customer;
+    private final User customer;
     private final List<Product> availableProducts;
     private final List<Product> shoppingCartItems;
     private DefaultTableModel tableModel;
     private JTextArea detailsTextArea;
-    private JPanel bottomPanel;
 
     public CustomerGUI(User customer, List<Product> availableProducts, List<Product> shoppingCartItems) {
         this.customer = customer;
@@ -94,7 +93,7 @@ public class CustomerGUI extends JFrame {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(tableScrollPane, BorderLayout.CENTER);
 
-        bottomPanel = new JPanel(new BorderLayout());
+        JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         bottomPanel.add(new JLabel("Selected Product - Details"), BorderLayout.NORTH);
         bottomPanel.add(detailsTextArea, BorderLayout.CENTER);
