@@ -206,6 +206,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 // removing that product from the "storeInventory" list
                 storeInventory.remove(product);
                 System.out.println(productType + " Product removed successfully" + ", removed product ID : " + productID);
+                // displaying the number of products remaining in the "storeInventory" list
+                System.out.println("Remaining product count : " + storeInventory.size());
                 // setting the "itemFound" variable to true to indicate that the product has been found
                 itemFound = true;
                 break;
