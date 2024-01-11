@@ -13,10 +13,8 @@ public class CustomerGUI extends JFrame {
     private final DefaultTableModel tableModel;
     private final JTextArea detailsTextArea;
 
-    public CustomerGUI(User customer, List<Product> availableProducts, List<Product> shoppingCartItems) {
+    public CustomerGUI(User customer, WestminsterShoppingManager wsmObject, ShoppingCart shoppingCartObject) {
         this.customer = customer;
-        this.availableProducts = availableProducts;
-        this.shoppingCartItems = shoppingCartItems;
 
         setTitle("Westminster Shopping Centre");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -36,6 +34,9 @@ public class CustomerGUI extends JFrame {
                 BorderFactory.createLineBorder(Color.BLACK),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
+
+        availableProducts = wsmObject.getStoreInventory();  // get the store inventory from inside GUI class
+        shoppingCartItems = shoppingCartObject.getSelectedProducts(); // get the shopping cart items from inside GUI class
 
         initUI();
         setLocationRelativeTo(null);

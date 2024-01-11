@@ -25,22 +25,23 @@ public class Main {
                     String username = promptUsername();
                     System.out.print("Password: ");
                     String password = scanner.next();
-                    
+
+                    // Create a new instance of the User class
                     User customer = new User(username, password);
 
-                    WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
-                    List<Product> availableProducts = westminsterShoppingManager.getStoreInventory();
+                    // Create a new instance of the WestminsterShoppingManager class
+                    WestminsterShoppingManager wsmObject = new WestminsterShoppingManager();
 
+                    // Create a new instance of the ShoppingCart class
                     ShoppingCart shoppingCart = new ShoppingCart();
-                    List<Product> shoppingCartItems = shoppingCart.getSelectedProducts();
 
                     // Launch the customer GUI (test call which displays all inventory items)
-                    launchCustomerGUI(customer, availableProducts, shoppingCartItems);
+                    launchCustomerGUI(customer, wsmObject, shoppingCart);
                 }
                 case "2" -> {
                     System.out.println("You have selected the manager console.");
-                    WestminsterShoppingManager westminsterShoppingManager = new WestminsterShoppingManager();
-                    westminsterShoppingManager.displayManagerConsole();
+                    WestminsterShoppingManager wsmObject = new WestminsterShoppingManager();
+                    wsmObject.displayManagerConsole();
                 }
                 case "3" -> System.out.println("""
                             \nThank you for using Westminster Shopping Manager!
@@ -50,10 +51,10 @@ public class Main {
         } while (!choice.equals("3"));
     }
 
-    private static void launchCustomerGUI(User customer, List<Product> availableProducts, List<Product> shoppingCartItems) {
+    private static void launchCustomerGUI(User customer, WestminsterShoppingManager wsmObject, ShoppingCart shoppingCartObject) {
         // Create and display the GUI on the event dispatch thread
         SwingUtilities.invokeLater(() -> {
-            CustomerGUI customerGUI = new CustomerGUI(customer, availableProducts, shoppingCartItems);
+            CustomerGUI customerGUI = new CustomerGUI(customer, wsmObject, shoppingCartObject);
             customerGUI.setVisible(true);
         });
     }
