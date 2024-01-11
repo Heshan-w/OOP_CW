@@ -3,7 +3,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.Serial;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,8 +10,8 @@ public class CustomerGUI extends JFrame {
     private final User customer;
     private final List<Product> availableProducts;
     private final List<Product> shoppingCartItems;
-    private DefaultTableModel tableModel;
-    private JTextArea detailsTextArea;
+    private final DefaultTableModel tableModel;
+    private final JTextArea detailsTextArea;
 
     public CustomerGUI(User customer, List<Product> availableProducts, List<Product> shoppingCartItems) {
         this.customer = customer;
@@ -22,21 +21,6 @@ public class CustomerGUI extends JFrame {
         setTitle("Westminster Shopping Centre");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1500, 600);
-
-        initUI();
-        setLocationRelativeTo(null);
-    }
-
-    private void initUI() {
-        setLayout(new BorderLayout());
-
-        String[] filterOptions = {"All", "Clothing", "Electronics"};
-        JComboBox<String> filterComboBox = new JComboBox<>(filterOptions);
-        filterComboBox.addActionListener(e -> updateTableAndDetails((String) filterComboBox.getSelectedItem()));
-
-        String[] sortOptions = {"Recently Added", "Alphabetical Order"};
-        JComboBox<String> sortComboBox = new JComboBox<>(sortOptions);
-        sortComboBox.addActionListener(e -> updateTableAndDetails(filterComboBox.getSelectedItem().toString(), (String) sortComboBox.getSelectedItem()));
 
         tableModel = new DefaultTableModel() {
             @Override
@@ -53,14 +37,92 @@ public class CustomerGUI extends JFrame {
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
 
-        updateTableAndDetails("All");
+        initUI();
+        setLocationRelativeTo(null);
+    }
+
+    private void initUI() {
+        setLayout(new BorderLayout());
+
+        JComboBox<String> filterComboBox = new JComboBox<>(new String[]{"All", "Clothing", "Electronics"});
+        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Recently Added", "Alphabetical Order"});
+
+        filterComboBox.addActionListener(e -> updateTableAndDetails((String) filterComboBox.getSelectedItem(), (String) sortComboBox.getSelectedItem()));
+        sortComboBox.addActionListener(e -> updateTableAndDetails((String) filterComboBox.getSelectedItem(), (String) sortComboBox.getSelectedItem()));
 
         JTable productsTable = new JTable(tableModel);
+        DefaultTableCellRenderer cellRenderer = createCellRenderer();
+        productsTable.setDefaultRenderer(Object.class, cellRenderer);
 
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-            @Serial
-            private static final long serialVersionUID = 1L;
+        JScrollPane tableScrollPane = new JScrollPane(productsTable);
+        tableScrollPane.setPreferredSize(new Dimension(0, 300));
 
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(tableScrollPane, BorderLayout.CENTER);
+
+        JPanel bottomPanel = createBottomPanel(productsTable);
+
+        add(createControlPanel(filterComboBox, sortComboBox), BorderLayout.NORTH);
+        add(topPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        updateTableAndDetails("All", "Recently Added");
+
+        // Add a selection listener directly to the table to update details when a new row is selected
+        productsTable.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = productsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                detailsTextArea.setText(getProductDetails(selectedRow));
+            }
+        });
+    }
+
+    private JPanel createControlPanel(JComboBox<String> filterComboBox, JComboBox<String> sortComboBox) {
+        JPanel controlPanel = new JPanel(new FlowLayout());
+        controlPanel.add(new JLabel("Filter:"));
+        controlPanel.add(filterComboBox);
+
+        JPanel sortPanel = new JPanel(new FlowLayout());
+        sortPanel.add(new JLabel("Sort By:"));
+        sortPanel.add(sortComboBox);
+
+        controlPanel.add(sortPanel);
+
+        JButton shoppingCartButton = new JButton("Open Shopping Cart");
+        shoppingCartButton.addActionListener(e -> openShoppingCart());
+
+        controlPanel.add(shoppingCartButton);
+
+        return controlPanel;
+    }
+
+    private JPanel createBottomPanel(JTable productsTable) {
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        bottomPanel.add(new JLabel("Selected Product - Details"), BorderLayout.NORTH);
+        bottomPanel.add(detailsTextArea, BorderLayout.CENTER);
+
+        JButton addToCartButton = new JButton("Add to Shopping Cart");
+        addToCartButton.addActionListener(e -> {
+            int selectedRow = productsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                Product selectedProduct = availableProducts.get(selectedRow);
+                if (selectedProduct != null) {
+                    addToShoppingCart(selectedProduct);
+                    JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
+                }
+            }
+        });
+
+        JPanel addToCartButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        addToCartButtonPanel.add(addToCartButton);
+        bottomPanel.add(addToCartButtonPanel, BorderLayout.SOUTH);
+
+        return bottomPanel;
+    }
+
+    private DefaultTableCellRenderer createCellRenderer() {
+        return new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -82,67 +144,6 @@ public class CustomerGUI extends JFrame {
                 return component;
             }
         };
-
-        cellRenderer.setHorizontalAlignment(JLabel.CENTER);
-        productsTable.setDefaultRenderer(Object.class, cellRenderer);
-        productsTable.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-        JScrollPane tableScrollPane = new JScrollPane(productsTable);
-        tableScrollPane.setPreferredSize(new Dimension(0, 300));
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(tableScrollPane, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        bottomPanel.add(new JLabel("Selected Product - Details"), BorderLayout.NORTH);
-        bottomPanel.add(detailsTextArea, BorderLayout.CENTER);
-
-        productsTable.getSelectionModel().addListSelectionListener(e -> {
-            int selectedRow = productsTable.getSelectedRow();
-            if (selectedRow != -1) {
-                detailsTextArea.setText(getProductDetails(selectedRow));
-            }
-        });
-
-        JPanel controlPanel = new JPanel(new FlowLayout());
-        controlPanel.add(new JLabel("Filter:"));
-        controlPanel.add(filterComboBox);
-
-        JPanel sortPanel = new JPanel(new FlowLayout());
-        sortPanel.add(new JLabel("Sort By:"));
-        sortPanel.add(sortComboBox);
-
-        controlPanel.add(sortPanel);
-
-        JPanel addToCartButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton addToCartButton = new JButton("Add to Shopping Cart");
-        addToCartButton.addActionListener(e -> {
-            int selectedRow = productsTable.getSelectedRow();
-            if (selectedRow != -1) {
-                Product selectedProduct = availableProducts.get(selectedRow);
-                if (selectedProduct != null) {
-                    addToShoppingCart(selectedProduct);
-                    JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
-                }
-            }
-        });
-        addToCartButtonPanel.add(addToCartButton);
-        bottomPanel.add(addToCartButtonPanel, BorderLayout.SOUTH);
-
-        JPanel shoppingCartButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton shoppingCartButton = new JButton("Open Shopping Cart");
-        shoppingCartButton.addActionListener(e -> openShoppingCart());
-        shoppingCartButtonPanel.add(shoppingCartButton);
-        controlPanel.add(shoppingCartButtonPanel);
-
-        add(controlPanel, BorderLayout.NORTH);
-        add(topPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-    }
-
-    private void updateTableAndDetails(String filter) {
-        updateTableAndDetails(filter, "Recently Added");
     }
 
     private void updateTableAndDetails(String filter, String sort) {
