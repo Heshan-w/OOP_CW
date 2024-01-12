@@ -21,7 +21,7 @@ public class ShoppingCart {
     }
 
     // method to print the total price of the products in the "selectedProducts" list
-    public double calculateTotalPrice(){
+    public double calculateTotalPrice(List<Product> selectedProducts){
         double totalPrice = 0;
         for (Product product : selectedProducts) {
             totalPrice += product.getPrice();

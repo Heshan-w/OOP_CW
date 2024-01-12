@@ -2,6 +2,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,20 +12,63 @@ public class ShoppingCartGUI extends JFrame {
     private User customer;
     private ShoppingCart shoppingCartObject;
     private List<Product> productsInCart;
+    private List<String> usernames;
     private DefaultTableModel tableModel;
+    private JLabel totalLabel;
+    private JLabel newCustomerDiscountLabel;
+    private JLabel productTypeDiscountAmountLabel;
 
     public ShoppingCartGUI(User customer, ShoppingCart shoppingCartObject) {
         this.customer = customer;
         this.shoppingCartObject = shoppingCartObject;
 
+        usernames = new ArrayList<>();
         productsInCart = shoppingCartObject.getSelectedProducts();
+        if (Files.exists(Paths.get("new_customers.txt"))) {
+            // calling the "readUsernamesFromFile" method to load existing customers' usernames from a text-file
+            readUsernamesFromFile();
+        }
 
         setTitle("Shopping Cart");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 400);
-
+        setSize(600, 500);
         initUI();
+
+        // Move the identification of new customers after initializing UI components
+        identifyNewCustomers();
+
         setLocationRelativeTo(null);
+    }
+
+    private void identifyNewCustomers() {
+        if (usernames.contains(customer.getUsername())) {
+            newCustomerDiscountLabel.setText("New customer discount: £0.00");
+        } else {
+            usernames.add(customer.getUsername());
+            newCustomerDiscountLabel.setText("New customer discount: £" + (shoppingCartObject.calculateTotalPrice(productsInCart) * 0.10));
+            // Save the new customer's username to a text file
+            saveNewCustomerUsername(customer.getUsername().strip());
+        }
+    }
+
+    private void saveNewCustomerUsername(String username) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("new_customers.txt", true))) {
+            writer.write(username);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error writing username to new customer file: " + e.getMessage());
+        }
+    }
+
+    private void readUsernamesFromFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("new_customers.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                usernames.add(line.strip());
+            }
+        } catch (IOException e) {
+            System.out.println("Unable to read usernames from file: " + e.getMessage());
+        }
     }
 
     private void initUI() {
@@ -58,6 +104,23 @@ public class ShoppingCartGUI extends JFrame {
 
         JScrollPane tableScrollPane = new JScrollPane(cartTable);
 
+        // Create a panel to display the total price and new customer discount at the bottom center
+        JPanel totalPanel = new JPanel(new BorderLayout());
+        totalPanel.setPreferredSize(new Dimension(getWidth(), 200));
+
+        // Total label
+        totalLabel = new JLabel(" Total:                  £0.00");
+        totalLabel.setHorizontalAlignment(JLabel.CENTER);
+        totalPanel.add(totalLabel, BorderLayout.NORTH);
+
+        // New customer discount label
+        newCustomerDiscountLabel = new JLabel(" New customer discount: £0.00");
+        newCustomerDiscountLabel.setHorizontalAlignment(JLabel.CENTER);
+        totalPanel.add(newCustomerDiscountLabel, BorderLayout.CENTER);
+
+        // Adding the total panel to the frame's bottom half
+        add(totalPanel, BorderLayout.SOUTH);
+
         // Adding the table to the frame
         add(tableScrollPane, BorderLayout.CENTER);
 
@@ -65,24 +128,25 @@ public class ShoppingCartGUI extends JFrame {
         populateCartTable();
     }
 
-
     private void populateCartTable() {
-        ArrayList<String> displayedProductIDs = new ArrayList<>();
         // Clear existing rows in the table
         tableModel.setRowCount(0);
 
         // Populate the table with product details
         for (Product product : productsInCart) {
-            // Check if the product ID is already in the set
-            if (!(displayedProductIDs.contains(product.getProductID()))) {
-                Object[] rowData = new Object[3];
-                rowData[0] = getProductDetails(product);
-                rowData[1] = 1;
-                rowData[2] = product.getPrice();
-                tableModel.addRow(rowData);
-                displayedProductIDs.add(product.getProductID());
-            }
+            // Check if product ID already in "displayedProductIDs" list, avoid displaying its information again
+            // else create a new row and display the data
+            Object[] rowData = new Object[3];
+            rowData[0] = getProductDetails(product);
+            rowData[1] = 1;
+            rowData[2] = product.getPrice();
+            tableModel.addRow(rowData);
         }
+
+        // Calculate the total price of all products in the cart
+        double totalPrice = shoppingCartObject.calculateTotalPrice(productsInCart);
+        // Update the total label with the calculated total price
+        totalLabel.setText(" Total:               £" + totalPrice);
     }
 
     private String getProductDetails(Product product) {
@@ -95,7 +159,7 @@ public class ShoppingCartGUI extends JFrame {
                             + ", " + clothing.getColour());
         } else if (product instanceof Electronics electronics) {
             return String.format(
-                            electronics.getProductID()
+                    electronics.getProductID()
                             + ", \n" + electronics.getProductName()
                             + ", \n" + electronics.getBrand()
                             + ", \n" + electronics.getWarrantyPeriod() + " weeks");

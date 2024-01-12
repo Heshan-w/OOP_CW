@@ -255,6 +255,10 @@ public class CustomerGUI extends JFrame {
     }
 
     private void openShoppingCart() {
+        if (shoppingCartItems.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Shopping cart is empty!");
+            return;
+        }
         SwingUtilities.invokeLater(() -> {
             ShoppingCartGUI shoppingCartGUI = new ShoppingCartGUI(customer, shoppingCartObject);
             shoppingCartGUI.setVisible(true);
