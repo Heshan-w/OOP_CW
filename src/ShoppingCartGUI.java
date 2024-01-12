@@ -17,6 +17,7 @@ public class ShoppingCartGUI extends JFrame {
     private JLabel totalLabel;
     private JLabel newCustomerDiscountLabel;
     private JLabel productTypeDiscountAmountLabel;
+    private JLabel finalTotalLabel;
 
     public ShoppingCartGUI(User customer, ShoppingCart shoppingCartObject) {
         this.customer = customer;
@@ -71,6 +72,26 @@ public class ShoppingCartGUI extends JFrame {
         }
     }
 
+    private void calculateProductTypeDiscount() {
+        int clothingCount = 0;
+        int electronicsCount = 0;
+        for (Product product : productsInCart) {
+            if (product instanceof Clothing) {
+                clothingCount++;
+            } else if (product instanceof Electronics) {
+                electronicsCount++;
+            }
+        }
+        double discount = shoppingCartObject.calculateTotalPrice(productsInCart) * 0.20;
+        if(clothingCount >= 3){
+            productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: - £" + String.format("%.2f", discount));
+        } else if (electronicsCount >= 3){
+            productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: - £" + String.format("%.2f", discount));
+        } else {
+            productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: £0.00");
+        }
+    }
+
     private void initUI() {
         setLayout(new BorderLayout());
 
@@ -109,7 +130,7 @@ public class ShoppingCartGUI extends JFrame {
         totalPanel.setPreferredSize(new Dimension(getWidth(), 200));
 
         // Total label
-        totalLabel = new JLabel(" Total:                  £0.00");
+        totalLabel = new JLabel(" Total: £0.00");
         totalLabel.setHorizontalAlignment(JLabel.CENTER);
         totalPanel.add(totalLabel, BorderLayout.NORTH);
 
@@ -117,6 +138,16 @@ public class ShoppingCartGUI extends JFrame {
         newCustomerDiscountLabel = new JLabel(" New customer discount: £0.00");
         newCustomerDiscountLabel.setHorizontalAlignment(JLabel.CENTER);
         totalPanel.add(newCustomerDiscountLabel, BorderLayout.CENTER);
+
+        // Product type discount label
+        productTypeDiscountAmountLabel = new JLabel(" Three Items In The Same Category Discount: £0.00");
+        productTypeDiscountAmountLabel.setHorizontalAlignment(JLabel.CENTER);
+        totalPanel.add(productTypeDiscountAmountLabel, BorderLayout.SOUTH);
+
+        // Final total label
+        finalTotalLabel = new JLabel(" Final total: £0.00");
+        finalTotalLabel.setHorizontalAlignment(JLabel.CENTER);
+        totalPanel.add(finalTotalLabel, BorderLayout.SOUTH);
 
         // Adding the total panel to the frame's bottom half
         add(totalPanel, BorderLayout.SOUTH);
@@ -134,8 +165,6 @@ public class ShoppingCartGUI extends JFrame {
 
         // Populate the table with product details
         for (Product product : productsInCart) {
-            // Check if product ID already in "displayedProductIDs" list, avoid displaying its information again
-            // else create a new row and display the data
             Object[] rowData = new Object[3];
             rowData[0] = getProductDetails(product);
             rowData[1] = 1;
@@ -146,7 +175,17 @@ public class ShoppingCartGUI extends JFrame {
         // Calculate the total price of all products in the cart
         double totalPrice = shoppingCartObject.calculateTotalPrice(productsInCart);
         // Update the total label with the calculated total price
-        totalLabel.setText(" Total:               £" + totalPrice);
+        totalLabel.setText(" Total: £" + totalPrice);
+        // Calculate the new customer discount
+        double newCustomerDiscount = totalPrice * 0.10;
+        // Update the new customer discount label with the calculated discount
+        newCustomerDiscountLabel.setText(" New customer discount: - £" + newCustomerDiscount);
+        // Calculate the product type discount
+        calculateProductTypeDiscount();
+        // Calculate the final total
+        double finalTotal = totalPrice - newCustomerDiscount - (totalPrice * 0.20);
+        // Update the final total label with the calculated final total
+        finalTotalLabel.setText(" Final total: £" + String.format("%.2f", finalTotal));
     }
 
     private String getProductDetails(Product product) {
