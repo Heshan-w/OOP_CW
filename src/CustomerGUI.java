@@ -241,9 +241,7 @@ public class CustomerGUI extends JFrame {
             String productID = productToAdd.getProductID();
             for (Product product : availableProducts) {
                 if (product.getProductID().equals(productID)) {
-                    System.out.println(product.getItemsInStock());  // debugging statement REMOVE FINALLY
                     product.setItemsInStock(product.getItemsInStock() - 1);
-                    System.out.println(product.getItemsInStock());  // debugging statement REMOVE FINALLY
                     break;
                 }
             }

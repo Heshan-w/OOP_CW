@@ -18,6 +18,8 @@ public class ShoppingCartGUI extends JFrame {
     private JLabel newCustomerDiscountLabel;
     private JLabel productTypeDiscountAmountLabel;
     private JLabel finalTotalLabel;
+    boolean newCustomerDiscount = false;
+    boolean productTypeDiscount = false;
 
     public ShoppingCartGUI(User customer, ShoppingCart shoppingCartObject) {
         this.customer = customer;
@@ -25,6 +27,7 @@ public class ShoppingCartGUI extends JFrame {
 
         usernames = new ArrayList<>();
         productsInCart = shoppingCartObject.getSelectedProducts();
+
         if (Files.exists(Paths.get("new_customers.txt"))) {
             // calling the "readUsernamesFromFile" method to load existing customers' usernames from a text-file
             readUsernamesFromFile();
@@ -36,17 +39,14 @@ public class ShoppingCartGUI extends JFrame {
         initUI();
 
         // Move the identification of new customers after initializing UI components
-        identifyNewCustomers();
-
         setLocationRelativeTo(null);
     }
 
     private void identifyNewCustomers() {
-        if (usernames.contains(customer.getUsername())) {
-            newCustomerDiscountLabel.setText("New customer discount: £0.00");
-        } else {
+        if (!(usernames.contains(customer.getUsername()))) {
+            newCustomerDiscount = true;
             usernames.add(customer.getUsername());
-            newCustomerDiscountLabel.setText("New customer discount: £" + (shoppingCartObject.calculateTotalPrice(productsInCart) * 0.10));
+            newCustomerDiscountLabel.setText("New customer discount: - £" + (shoppingCartObject.calculateTotalPrice(productsInCart) * 0.10));
             // Save the new customer's username to a text file
             saveNewCustomerUsername(customer.getUsername().strip());
         }
@@ -85,10 +85,10 @@ public class ShoppingCartGUI extends JFrame {
         double discount = shoppingCartObject.calculateTotalPrice(productsInCart) * 0.20;
         if(clothingCount >= 3){
             productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: - £" + String.format("%.2f", discount));
+            productTypeDiscount = true;
         } else if (electronicsCount >= 3){
             productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: - £" + String.format("%.2f", discount));
-        } else {
-            productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: £0.00");
+            productTypeDiscount = true;
         }
     }
 
@@ -157,6 +157,8 @@ public class ShoppingCartGUI extends JFrame {
 
         // Populate the table with product details
         populateCartTable();
+        identifyNewCustomers();
+        costDetails();
     }
 
     private void populateCartTable() {
@@ -171,21 +173,6 @@ public class ShoppingCartGUI extends JFrame {
             rowData[2] = product.getPrice();
             tableModel.addRow(rowData);
         }
-
-        // Calculate the total price of all products in the cart
-        double totalPrice = shoppingCartObject.calculateTotalPrice(productsInCart);
-        // Update the total label with the calculated total price
-        totalLabel.setText(" Total: £" + totalPrice);
-        // Calculate the new customer discount
-        double newCustomerDiscount = totalPrice * 0.10;
-        // Update the new customer discount label with the calculated discount
-        newCustomerDiscountLabel.setText(" New customer discount: - £" + newCustomerDiscount);
-        // Calculate the product type discount
-        calculateProductTypeDiscount();
-        // Calculate the final total
-        double finalTotal = totalPrice - newCustomerDiscount - (totalPrice * 0.20);
-        // Update the final total label with the calculated final total
-        finalTotalLabel.setText(" Final total: £" + String.format("%.2f", finalTotal));
     }
 
     private String getProductDetails(Product product) {
@@ -205,5 +192,24 @@ public class ShoppingCartGUI extends JFrame {
         } else {
             return "";
         }
+    }
+
+    public void costDetails() {
+        // Calculate the total price of all products in the cart
+        double totalPrice = shoppingCartObject.calculateTotalPrice(productsInCart);
+        // Update the total label with the calculated total price
+        totalLabel.setText("Total: £" + totalPrice);
+        calculateProductTypeDiscount();
+        double finalPrice;
+        if (newCustomerDiscount && productTypeDiscount) {
+            finalPrice = totalPrice * 0.70 ;
+        } else if (newCustomerDiscount) {
+            finalPrice = totalPrice * 0.90;
+        } else if (productTypeDiscount) {
+            finalPrice = totalPrice* 0.80;
+        } else {
+            finalPrice = totalPrice;
+        }
+        finalTotalLabel.setText(" Final total: £" + finalPrice);
     }
 }
