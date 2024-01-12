@@ -23,22 +23,22 @@ public class ShoppingCartGUI extends JFrame {
         this.customer = customer;
         this.shoppingCartObject = shoppingCartObject;
 
-        setTitle("Shopping Cart");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 500);
-        initUI();
-
-        // Create a list to store new customers' usernames
-        setLocationRelativeTo(null);
-
         usernames = new ArrayList<>();
         productsInCart = shoppingCartObject.getSelectedProducts();
         if (Files.exists(Paths.get("new_customers.txt"))) {
             // calling the "readUsernamesFromFile" method to load existing customers' usernames from a text-file
             readUsernamesFromFile();
         }
-        // method to identify new customers and calculate the new customer discount
+
+        setTitle("Shopping Cart");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(600, 500);
+        initUI();
+
+        // Move the identification of new customers after initializing UI components
         identifyNewCustomers();
+
+        setLocationRelativeTo(null);
     }
 
     private void identifyNewCustomers() {
@@ -125,7 +125,7 @@ public class ShoppingCartGUI extends JFrame {
 
         JScrollPane tableScrollPane = new JScrollPane(cartTable);
 
-        // Create a panel to display the total price, new-customer/product category discount at the bottom
+        // Create a panel to display the total price and new customer discount at the bottom center
         JPanel totalPanel = new JPanel(new GridLayout(4, 1));
         totalPanel.setPreferredSize(new Dimension(getWidth(), 200));
 
