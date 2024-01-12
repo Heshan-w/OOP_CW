@@ -262,7 +262,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
         // catching the exceptions thrown by the "FileOutputStream" and "ObjectOutputStream" constructors
         } catch (IOException e){
             System.out.println("\nError occurred while saving products");
-            e.printStackTrace();
         }
     }
 
@@ -278,7 +277,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
             System.out.println("\nProducts loaded successfully");
         } catch (IOException | ClassNotFoundException e){
             System.out.println("\nError occurred while loading products");
-            e.printStackTrace();
         }
     }
 
@@ -287,16 +285,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return storeInventory;
     }
 
-//    public int getItemStock(String productName) {
-//        int stock = 0;
-//        for (Product product : storeInventory) {
-//            if (product.getProductName().equals(productName)) {
-//                stock ++;
-//            }
-//        }
-//        return stock;
-//    }
-
+    // method to prompt and gather the product ID from the user
     public String promptProductID(int type) {
         System.out.println();
         Scanner scanner = new Scanner(System.in);
@@ -323,6 +312,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return productID;
     }
 
+    // method to prompt and gather the product name from the user
     public String promptProductName() {
         String productName;
         Scanner scanner = new Scanner(System.in);
@@ -338,6 +328,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return productName;
     }
 
+    // method to prompt and gather the items in stock for a certain product from the user
     public int promptItemsInStock() {
         int itemsInStock;
         Scanner scanner = new Scanner(System.in);
@@ -360,6 +351,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return itemsInStock;
     }
 
+    // method to prompt and gather the price of a product from the user
     public double promptPrice() {
         double price;
         Scanner scanner = new Scanner(System.in);
@@ -380,6 +372,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return price;
     }
 
+    // method to prompt and gather the brand name of an electronic product from the user
     public String promptBrandName() {
         String brandName;
         Scanner scanner = new Scanner(System.in);
@@ -394,6 +387,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return brandName;
     }
 
+    // method to prompt and gather the warranty period of an electronic product from the user
     public int promptWarrantyPeriod() {
         int warrantyPeriod;
         Scanner scanner = new Scanner(System.in);
@@ -413,6 +407,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return warrantyPeriod;
     }
 
+    // method to prompt and gather the size of a clothing product from the user
     public String promptSize() {
         // Declaring an arraylist of acceptable size options
         List<String> sizes = new ArrayList<>(Arrays.asList("XS", "S", "M", "L", "XL", "XXL"));
@@ -431,6 +426,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return size;
     }
 
+    // method to prompt and gather the colour of a clothing product from the user
     public String promptColour() {
         Scanner scanner = new Scanner(System.in);
         String colour;
