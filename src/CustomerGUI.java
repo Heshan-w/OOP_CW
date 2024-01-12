@@ -8,18 +8,32 @@ import java.util.stream.Collectors;
 
 public class CustomerGUI extends JFrame {
     private final User customer;
+    private final WestminsterShoppingManager wsmObject;
+    private final ShoppingCart shoppingCartObject;
+    // the list that stores the products currently available in the store
     private final List<Product> availableProducts;
+    // a list to temporarily store the selected products
     private final List<Product> shoppingCartItems;
     private final DefaultTableModel tableModel;
     private final JTextArea detailsTextArea;
 
     public CustomerGUI(User customer, WestminsterShoppingManager wsmObject, ShoppingCart shoppingCartObject) {
         this.customer = customer;
+        this.wsmObject = wsmObject;
+        this.shoppingCartObject = shoppingCartObject;
 
+        // assign products available in store.
+        // done by accessing the product list updated in the WestminsterShoppingManager object
+        availableProducts = wsmObject.getStoreInventory();
+        // get the shopping cart list from the ShoppingCart class
+        shoppingCartItems = shoppingCartObject.getSelectedProducts();
+
+        // set the title, default close operation, and size of the frame
         setTitle("Westminster Shopping Centre");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1500, 600);
 
+        // create a new table model with the following column names
         tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -34,9 +48,6 @@ public class CustomerGUI extends JFrame {
                 BorderFactory.createLineBorder(Color.BLACK),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
-
-        availableProducts = wsmObject.getStoreInventory();  // get the store inventory from inside GUI class
-        shoppingCartItems = shoppingCartObject.getSelectedProducts(); // get the shopping cart items from inside GUI class
 
         initUI();
         setLocationRelativeTo(null);
@@ -57,6 +68,10 @@ public class CustomerGUI extends JFrame {
 
         JScrollPane tableScrollPane = new JScrollPane(productsTable);
         tableScrollPane.setPreferredSize(new Dimension(0, 300));
+        tableScrollPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -106,13 +121,7 @@ public class CustomerGUI extends JFrame {
         JButton addToCartButton = new JButton("Add to Shopping Cart");
         addToCartButton.addActionListener(e -> {
             int selectedRow = productsTable.getSelectedRow();
-            if (selectedRow != -1) {
-                Product selectedProduct = availableProducts.get(selectedRow);
-                if (selectedProduct != null) {
-                    addToShoppingCart(selectedProduct);
-                    JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
-                }
-            }
+            addToShoppingCart(selectedRow);
         });
 
         JPanel addToCartButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -131,17 +140,6 @@ public class CustomerGUI extends JFrame {
                         BorderFactory.createLineBorder(Color.BLACK),
                         BorderFactory.createEmptyBorder(5, 5, 5, 5)
                 ));
-
-                // Get the Product object for the current row
-                Product product = availableProducts.get(row);
-
-                // Check if the ItemsInStock is less than three
-                if (product != null && product.getItemsInStock() < 3) {
-                    component.setForeground(Color.RED); // Set the text color to red
-                } else {
-                    component.setForeground(table.getForeground()); // Use the default text color
-                }
-
                 return component;
             }
         };
@@ -205,14 +203,60 @@ public class CustomerGUI extends JFrame {
         return details.toString();
     }
 
-    private void addToShoppingCart(Product product) {
-        // Implement your logic to add the product to the shopping cart
-        // You can update the shopping cart of the customer or perform any other necessary actions
+    private void addToShoppingCart(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < availableProducts.size()) {
+            Product selectedProduct = availableProducts.get(rowIndex);
+            Product productToAdd;
+
+            // Check the type of the selected product and create an instance accordingly
+            if (selectedProduct instanceof Clothing clothing) {
+                productToAdd = new Clothing(
+                        clothing.getProductID(),
+                        clothing.getProductName(),
+                        clothing.getItemsInStock(),
+                        clothing.getPrice(),
+                        clothing.getSize(),
+                        clothing.getColour()
+                );
+            } else if (selectedProduct instanceof Electronics electronics) {
+                productToAdd = new Electronics(
+                        electronics.getProductID(),
+                        electronics.getProductName(),
+                        electronics.getItemsInStock(),
+                        electronics.getPrice(),
+                        electronics.getBrand(),
+                        electronics.getWarrantyPeriod()
+                );
+            } else {
+                // Handle other product types as needed
+                return;
+            }
+
+            // Add the newly created Product object to the shoppingCartItems list
+            shoppingCartItems.add(productToAdd);
+            // Add the newly created Product object to the selectedProducts list in shoppingCart class
+            shoppingCartObject.setSelectedProducts(shoppingCartItems);;
+
+            // Update the items in stock for the item added to cart
+            String productID = productToAdd.getProductID();
+            for (Product product : availableProducts) {
+                if (product.getProductID().equals(productID)) {
+                    System.out.println(product.getItemsInStock());  // debugging statement REMOVE FINALLY
+                    product.setItemsInStock(product.getItemsInStock() - 1);
+                    System.out.println(product.getItemsInStock());  // debugging statement REMOVE FINALLY
+                    break;
+                }
+            }
+            // save the changes made to the store inventory into the file
+            wsmObject.saveToFile();
+            // update the UI or perform other actions as needed
+            JOptionPane.showMessageDialog(null, "Product added to the shopping cart!");
+        }
     }
 
     private void openShoppingCart() {
         SwingUtilities.invokeLater(() -> {
-            ShoppingCartGUI shoppingCartGUI = new ShoppingCartGUI(customer, shoppingCartItems);
+            ShoppingCartGUI shoppingCartGUI = new ShoppingCartGUI(customer, shoppingCartObject);
             shoppingCartGUI.setVisible(true);
         });
     }

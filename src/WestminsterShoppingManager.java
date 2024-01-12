@@ -42,7 +42,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 case "1" -> addProduct();
                 case "2" -> removeProduct();
                 case "3" -> printProductList();
-                case "4" -> saveToFile();
+                case "4" -> {
+                    saveToFile();
+                    System.out.println("\nProducts saved successfully");
+                }
                 case "5" -> loadFromFile();
                 case "6" -> {
                     while (true) {
@@ -59,6 +62,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
                         if (saveOption.equals("1")) {
                             // calling the "saveToFile" method to save the changes made to the inventory
                             saveToFile();
+                            System.out.println("\nProducts saved successfully");
                             System.out.println("Exiting the manager menu....");
                             // terminating the looping
                             break;
@@ -207,7 +211,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 storeInventory.remove(product);
                 System.out.println(productType + " Product removed successfully" + ", removed product ID : " + productID);
                 // displaying the number of products remaining in the "storeInventory" list
-                System.out.println("Remaining product count : " + storeInventory.size());
+                System.out.println("Remaining product count (Electronics & Clothing items): " + storeInventory.size());
                 // setting the "itemFound" variable to true to indicate that the product has been found
                 itemFound = true;
                 break;
@@ -258,7 +262,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("products.dat"))){
             // using writeObject() to write the "storeInventory" list to the file
             objectOutputStream.writeObject(storeInventory);
-            System.out.println("\nProducts saved successfully");
         // catching the exceptions thrown by the "FileOutputStream" and "ObjectOutputStream" constructors
         } catch (IOException e){
             System.out.println("\nError occurred while saving products");

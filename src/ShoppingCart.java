@@ -3,9 +3,9 @@ import java.util.List;
 
 public class ShoppingCart {
     // declaring a list of "Product" type objects to store products selected by the user
-    private final List<Product> selectedProducts;
+    private List<Product> selectedProducts;
 
-    // constructor for the "ShoppingCart" class
+//     constructor for the "ShoppingCart" class
     public ShoppingCart() {
         this.selectedProducts = new ArrayList<>();
     }
@@ -32,5 +32,10 @@ public class ShoppingCart {
     // method to get the list of Product objects in the "selectedProducts" list
     public List<Product> getSelectedProducts() {
         return selectedProducts;
+    }
+
+    // method to set the list of Product objects in the "selectedProducts" list
+    public void setSelectedProducts(List<Product> selectedProducts) {
+        this.selectedProducts = selectedProducts;
     }
 }
