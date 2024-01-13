@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCartGUI extends JFrame {
+    //create and initialize variables at the top of the class to make them accessible to all methods
     private final User customer;
     private final ShoppingCart shoppingCartObject;
     private final List<Product> productsInCart;
@@ -18,6 +19,7 @@ public class ShoppingCartGUI extends JFrame {
     private JLabel newCustomerDiscountLabel;
     private JLabel productTypeDiscountAmountLabel;
     private JLabel finalTotalLabel;
+    // Create boolean variables to check if the customer is eligible for a discount
     boolean newCustomerDiscount;
     boolean productTypeDiscount;
 
@@ -25,9 +27,13 @@ public class ShoppingCartGUI extends JFrame {
         this.customer = customer;
         this.shoppingCartObject = shoppingCartObject;
 
+        // create an array list to store the list of usernames of new customers
         usernames = new ArrayList<>();
+        // create an array list to store the list of products in the shopping cart
         productsInCart = shoppingCartObject.getSelectedProducts();
 
+        // Check if the "new_customers.txt" file exists and if so, read the usernames from the file
+        // this file will store the usernames of new customers
         if (Files.exists(Paths.get("new_customers.txt"))) {
             // calling the "readUsernamesFromFile" method to load existing customers' usernames from a text-file
             readUsernamesFromFile();
@@ -38,20 +44,26 @@ public class ShoppingCartGUI extends JFrame {
         setSize(600, 500);
         initUI();
 
-        // Move the identification of new customers after initializing UI components
         setLocationRelativeTo(null);
     }
 
+    // Create a method to check if the customer is a new customer
     private void identifyNewCustomers() {
+        // Check if the customer's username is in the list of usernames
         if (!(usernames.contains(customer.getUsername()))) {
+            // If the customer is a new customer, set the newCustomerDiscount boolean to true
             newCustomerDiscount = true;
+            // Add the customer's username to the list of usernames
             usernames.add(customer.getUsername());
+            // Update the new customer discount label with the discount amount
             newCustomerDiscountLabel.setText("New customer discount: - £" + (shoppingCartObject.calculateTotalPrice(productsInCart) * 0.10));
             // Save the new customer's username to a text file
             saveNewCustomerUsername(customer.getUsername().strip());
         }
     }
 
+    // Create a method to save the new customer's username to a text file
+    //saving it this way makes sure that new customers are not eligible for the discount more than once
     private void saveNewCustomerUsername(String username) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("new_customers.txt", true))) {
             writer.write(username);
@@ -61,10 +73,14 @@ public class ShoppingCartGUI extends JFrame {
         }
     }
 
+    // Create a method to read the usernames from the text file
     private void readUsernamesFromFile() {
+        // Clear the list of usernames before reading from the file
+        usernames.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader("new_customers.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                // Add each username to the list of usernames
                 usernames.add(line.strip());
             }
         } catch (IOException e) {
@@ -72,9 +88,12 @@ public class ShoppingCartGUI extends JFrame {
         }
     }
 
+    // Create a method to calculate the product type discount
+    // if there are more than 3 items of the same type, the customer gets a 20% discount
     private void calculateProductTypeDiscount() {
         int clothingCount = 0;
         int electronicsCount = 0;
+        // checking if the product is clothing or electronics and incrementing the count
         for (Product product : productsInCart) {
             if (product instanceof Clothing) {
                 clothingCount++;
@@ -82,9 +101,12 @@ public class ShoppingCartGUI extends JFrame {
                 electronicsCount++;
             }
         }
+        // calculating the discount amount
         double discount = shoppingCartObject.calculateTotalPrice(productsInCart) * 0.20;
         if(clothingCount >= 3){
+            // updating the product type discount label with the discount amount
             productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: - £" + String.format("%.2f", discount));
+            // setting the product type discount boolean to true
             productTypeDiscount = true;
         } else if (electronicsCount >= 3){
             productTypeDiscountAmountLabel.setText("Three Items In The Same Category Discount: - £" + String.format("%.2f", discount));
@@ -92,6 +114,7 @@ public class ShoppingCartGUI extends JFrame {
         }
     }
 
+    // Create a method to initialize the UI
     private void initUI() {
         setLayout(new BorderLayout());
         // Create a table model with columns: "Product," "Quantity," and "Price(£)"
@@ -122,6 +145,7 @@ public class ShoppingCartGUI extends JFrame {
             cartTable.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
         }
 
+        // Create a scroll pane for the table
         JScrollPane tableScrollPane = new JScrollPane(cartTable);
 
         // Create a panel to display the total price and new customer discount at the bottom center
@@ -198,7 +222,9 @@ public class ShoppingCartGUI extends JFrame {
         double totalPrice = shoppingCartObject.calculateTotalPrice(productsInCart);
         // Update the total label with the calculated total price
         totalLabel.setText("Total: £" + totalPrice);
+        // call the method to calculate the same product type discount
         calculateProductTypeDiscount();
+        // Calculate the final price based on the discounts
         double finalPrice;
         if (newCustomerDiscount && productTypeDiscount) {
             finalPrice = totalPrice * 0.70 ;
@@ -209,6 +235,7 @@ public class ShoppingCartGUI extends JFrame {
         } else {
             finalPrice = totalPrice;
         }
+        // Update the final total label with the calculated final price
         finalTotalLabel.setText(" Final total: £" + finalPrice);
     }
 }
