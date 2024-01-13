@@ -1,6 +1,5 @@
 public interface ShoppingManager {
     // declaring "ShoppingManager" interface specific methods
-    // no access modifier specified as all methods in an interface are public by default
 
     // method to add a product to a data structure(ie: List) specified in a class implementing this interface
     void addProduct();

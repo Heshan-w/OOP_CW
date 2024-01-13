@@ -76,6 +76,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
                         }
                     }
                 }
+                // if the user enters an invalid option, the loop continues
                 default -> System.out.println("Invalid choice. Please enter a valid option (1-6).");
             }
         } while (!choice.equals("6"));
@@ -86,10 +87,13 @@ public class WestminsterShoppingManager implements ShoppingManager {
     public void addProduct() {
         // constant variable that stores the maximum number of products that can be in stock
         int maxStock = 50;
+        // checking if the number of products in the "storeInventory" list is equal to the maximum stock
         if (storeInventory.size() == maxStock) {
-            System.out.println("Maximum stock reached");
+            // if so displaying a message to notify about it and terminating the method
+            System.out.println("Maximum stock reached, cannot add more products");
             return;
         }
+        // creating a scanner object to read user input
         Scanner scanner = new Scanner(System.in);
         String choice;
 
@@ -100,6 +104,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
             System.out.println("Enter 2 to add a new clothing product");
             System.out.println("Enter 3 to return to the Manager options menu");
             System.out.print("Enter your choice (1-3): ");
+            // using the "next()" method to read the user input
             choice = scanner.next();
 
             // switch statement to execute the appropriate method based on the user input
@@ -277,7 +282,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
             // using addAll() to add all the products in the file to the "storeInventory" list
             // (List<Product>) is used to cast the object returned by readObject() to a "List<Product>" type object
             storeInventory.addAll((List<Product>) objectInputStream.readObject());
-            System.out.println("\nProducts loaded successfully");
         } catch (IOException | ClassNotFoundException e){
             System.out.println("\nError occurred while loading products");
         }

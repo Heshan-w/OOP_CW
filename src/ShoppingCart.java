@@ -5,7 +5,7 @@ public class ShoppingCart {
     // declaring a list of "Product" type objects to store products selected by the user
     private List<Product> selectedProducts;
 
-//     constructor for the "ShoppingCart" class
+    // constructor for the "ShoppingCart" class
     public ShoppingCart() {
         this.selectedProducts = new ArrayList<>();
     }
@@ -14,7 +14,6 @@ public class ShoppingCart {
     public void addProduct(Product product){
         selectedProducts.add(product);
     }
-
     // method to remove a product from the "selectedProducts" list
     public void removeProduct(Product product){
         selectedProducts.remove(product);

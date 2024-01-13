@@ -1,3 +1,4 @@
+// serializable is used to convert the objects to a byte stream and then be written/read to/from a file
 import java.io.Serializable;
 
 public abstract class Product implements Serializable {

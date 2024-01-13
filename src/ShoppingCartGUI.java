@@ -9,17 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCartGUI extends JFrame {
-    private User customer;
-    private ShoppingCart shoppingCartObject;
-    private List<Product> productsInCart;
-    private List<String> usernames;
+    private final User customer;
+    private final ShoppingCart shoppingCartObject;
+    private final List<Product> productsInCart;
+    private final List<String> usernames;
     private DefaultTableModel tableModel;
     private JLabel totalLabel;
     private JLabel newCustomerDiscountLabel;
     private JLabel productTypeDiscountAmountLabel;
     private JLabel finalTotalLabel;
-    boolean newCustomerDiscount = false;
-    boolean productTypeDiscount = false;
+    boolean newCustomerDiscount;
+    boolean productTypeDiscount;
 
     public ShoppingCartGUI(User customer, ShoppingCart shoppingCartObject) {
         this.customer = customer;
@@ -94,7 +94,6 @@ public class ShoppingCartGUI extends JFrame {
 
     private void initUI() {
         setLayout(new BorderLayout());
-
         // Create a table model with columns: "Product," "Quantity," and "Price(£)"
         tableModel = new DefaultTableModel(new Object[][]{}, new String[]{"Product", "Quantity", "Price(£)"}) {
             @Override
@@ -158,7 +157,7 @@ public class ShoppingCartGUI extends JFrame {
         // Populate the table with product details
         populateCartTable();
         identifyNewCustomers();
-        costDetails();
+        getCostDetails();
     }
 
     private void populateCartTable() {
@@ -194,7 +193,7 @@ public class ShoppingCartGUI extends JFrame {
         }
     }
 
-    public void costDetails() {
+    public void getCostDetails() {
         // Calculate the total price of all products in the cart
         double totalPrice = shoppingCartObject.calculateTotalPrice(productsInCart);
         // Update the total label with the calculated total price
