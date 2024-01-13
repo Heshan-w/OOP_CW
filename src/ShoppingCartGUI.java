@@ -236,6 +236,6 @@ public class ShoppingCartGUI extends JFrame {
             finalPrice = totalPrice;
         }
         // Update the final total label with the calculated final price
-        finalTotalLabel.setText(" Final total: £" + finalPrice);
+        finalTotalLabel.setText(" Final total: £" + String.format("%.2f", finalPrice));
     }
 }

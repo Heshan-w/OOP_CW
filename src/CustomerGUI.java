@@ -225,7 +225,7 @@ public class CustomerGUI extends JFrame {
             // if the filter option is Clothing, filter the products to only include products of type Clothing
             case "Clothing" -> sortedProducts.stream().filter(product -> product instanceof Clothing).collect(Collectors.toList());
             case "Electronics" -> sortedProducts.stream().filter(product -> product instanceof Electronics).collect(Collectors.toList());
-            // finnaly if its "All", return the sorted products
+            // finally if its "All", return the sorted products
             default -> sortedProducts;
         };
 
